@@ -218,6 +218,9 @@ resource "local_file" "kubeconfig" {
   filename       = abspath("${path.root}/${var.name}.kubeconfig")
 
   file_permission = "0644"
+  lifecycle {
+    ignore_changes = ["content_base64"]
+  }
 }
 
 module "wait_for_eks" {
