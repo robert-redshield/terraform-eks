@@ -1,16 +1,22 @@
 # allow workers to manage ALBs and Route53 records
-resource "aws_iam_role_policy" "eks_workers_albs" {
+resource "aws_iam_policy" "eks_workers_albs" {
   name = "alb_manager"
-  role = module.eks.worker_iam_role_name
-
   policy = file("${path.module}/iam/albs.json")
 }
 
-resource "aws_iam_role_policy" "eks_workers_route53" {
-  name = "route53_manager"
+resource "aws_iam_role_policy_attachment" "eks_workers_albs" {
   role = module.eks.worker_iam_role_name
+  policy_arn = aws_iam_policy.eks_workers_albs.arn
+}
 
+resource "aws_iam_policy" "eks_workers_route53" {
+  name = "route53_manager"
   policy = file("${path.module}/iam/route53.json")
+}
+
+resource "aws_iam_role_policy_attachment" "eks_workers_route53" {
+  role = module.eks.worker_iam_role_name
+  policy_arn = aws_iam_policy.eks_workers_route53.arn
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2RoleForSSM" {
